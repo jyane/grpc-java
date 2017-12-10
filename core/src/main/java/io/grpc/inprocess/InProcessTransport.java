@@ -34,6 +34,7 @@ import io.grpc.Status;
 import io.grpc.internal.ClientStream;
 import io.grpc.internal.ClientStreamListener;
 import io.grpc.internal.ConnectionClientTransport;
+import io.grpc.internal.GrpcUtil;
 import io.grpc.internal.ManagedClientTransport;
 import io.grpc.internal.NoopClientStream;
 import io.grpc.internal.ObjectPool;
@@ -66,6 +67,7 @@ final class InProcessTransport implements ServerTransport, ConnectionClientTrans
   private final InternalLogId logId = InternalLogId.allocate(getClass().getName());
   private final String name;
   private final String authority;
+  private final String userAgent;
   private ObjectPool<ScheduledExecutorService> serverSchedulerPool;
   private ScheduledExecutorService serverScheduler;
   private ServerTransportListener serverTransportListener;
@@ -82,9 +84,10 @@ final class InProcessTransport implements ServerTransport, ConnectionClientTrans
   @GuardedBy("this")
   private List<ServerStreamTracer.Factory> serverStreamTracerFactories;
 
-  public InProcessTransport(String name, String authority) {
+  public InProcessTransport(String name, String authority, String userAgent) {
     this.name = name;
     this.authority = authority;
+    this.userAgent = userAgent;
   }
 
   @CheckReturnValue
@@ -143,7 +146,7 @@ final class InProcessTransport implements ServerTransport, ConnectionClientTrans
         }
       };
     }
-    return new InProcessStream(method, headers, callOptions, authority).clientStream;
+    return new InProcessStream(method, headers, callOptions, authority, userAgent).clientStream;
   }
 
   @Override
@@ -259,9 +262,12 @@ final class InProcessTransport implements ServerTransport, ConnectionClientTrans
 
     private InProcessStream(
         MethodDescriptor<?, ?> method, Metadata headers, CallOptions callOptions,
-        String authority) {
+        String authority, String userAgent) {
       this.method = checkNotNull(method, "method");
       this.headers = checkNotNull(headers, "headers");
+      headers.put(
+          GrpcUtil.USER_AGENT_KEY,
+          GrpcUtil.getGrpcUserAgent("inprocess", userAgent));
       this.authority = authority;
       this.clientStream = new InProcessClientStream(callOptions, headers);
       this.serverStream = new InProcessServerStream(method, headers);
@@ -393,6 +399,7 @@ final class InProcessTransport implements ServerTransport, ConnectionClientTrans
         if (closed) {
           return;
         }
+        System.out.println("ServerStream#writeHeaders = " + headers);
         clientStream.statsTraceCtx.clientInboundHeaders();
         clientStreamListener.headersRead(headers);
       }

@@ -49,7 +49,7 @@ public class InProcessTransportTest extends AbstractTransportTest {
 
   @Override
   protected ManagedClientTransport newClientTransport(InternalServer server) {
-    return new InProcessTransport(TRANSPORT_NAME, testAuthority(server));
+    return new InProcessTransport(TRANSPORT_NAME, testAuthority(server), "");
   }
 
   @Override
