@@ -7,6 +7,7 @@ def grpc_java_repositories(
     omit_com_google_code_gson=False,
     omit_com_google_errorprone_error_prone_annotations=False,
     omit_com_google_guava=False,
+    omit_com_google_instrumentation_instrumentation_api=False,
     omit_com_google_protobuf=False,
     omit_com_google_protobuf_java=False,
     omit_com_google_protobuf_nano_protobuf_javanano=False,
@@ -41,6 +42,8 @@ def grpc_java_repositories(
     com_google_errorprone_error_prone_annotations()
   if not omit_com_google_guava:
     com_google_guava()
+  if not omit_com_google_instrumentation_instrumentation_api:
+    com_google_instrumentation_instrumentation_api()
   if not omit_com_google_protobuf:
     com_google_protobuf()
   if omit_com_google_protobuf_java:
@@ -133,6 +136,13 @@ def com_google_guava():
       name = "com_google_guava_guava",
       artifact = "com.google.guava:guava:19.0",
       sha1 = "6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9",
+  )
+
+def com_google_instrumentation_instrumentation_api():
+  native.maven_jar(
+      name = "com_google_instrumentation_instrumentation_api",
+      artifact = "com.google.instrumentation:instrumentation-api:0.4.3",
+      sha1 = "41614af3429573dc02645d541638929d877945a2",
   )
 
 def com_google_protobuf():

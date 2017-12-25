@@ -1,0 +1,128 @@
+load("@grpc_java//:java_grpc_library.bzl", "java_grpc_library")
+
+java_library(
+    name = "services",
+    srcs = glob([
+        "src/main/java/**/*.java",
+    ]),
+    visibility = ["//visibility:public"],
+    deps = [
+        "//core",
+        "//stub",
+        "//protobuf",
+        "//services:binarylog_java_grpc",
+        "//services:binarylog_java_proto",
+        "//services:census_java_grpc",
+        "//services:census_java_proto",
+        "//services:health_java_grpc",
+        "//services:health_java_proto",
+        "//services:reflection_java_grpc",
+        "//services:reflection_java_proto",
+        "//services:monitoring_java_grpc",
+        "//services:monitoring_java_proto",
+        "@com_google_code_findbugs_jsr305//jar",
+        "@com_google_instrumentation_instrumentation_api//jar",
+        "@com_google_guava_guava//jar",
+        "@com_google_protobuf//:protobuf_java",
+    ],
+)
+
+proto_library(
+    name = "binarylog_proto",
+    srcs = ["src/main/proto/io/grpc/binarylog.proto"],
+)
+
+java_proto_library(
+    name = "binarylog_java_proto",
+    deps = [":binarylog_proto"],
+)
+
+java_grpc_library(
+    name = "binarylog_java_grpc",
+    srcs = [":binarylog_proto"],
+    deps = [":binarylog_java_proto"],
+)
+
+proto_library(
+    name = "census_proto",
+    srcs = ["protobuf_out/census.proto"],
+)
+
+java_proto_library(
+    name = "census_java_proto",
+    deps = [":census_proto"],
+)
+
+java_grpc_library(
+    name = "census_java_grpc",
+    srcs = [":census_proto"],
+    deps = [":census_java_proto"],
+)
+
+proto_library(
+    name = "health_proto",
+    srcs = ["src/main/proto/health.proto"],
+)
+
+java_proto_library(
+    name = "health_java_proto",
+    deps = [":health_proto"],
+)
+
+java_grpc_library(
+    name = "health_java_grpc",
+    srcs = [":health_proto"],
+    deps = [":health_java_proto"],
+)
+
+proto_library(
+    name = "reflection_proto",
+    srcs = ["src/main/proto/io/grpc/reflection/v1alpha/reflection.proto"],
+)
+
+java_proto_library(
+    name = "reflection_java_proto",
+    deps = [":reflection_proto"],
+)
+
+java_grpc_library(
+    name = "reflection_java_grpc",
+    srcs = [":reflection_proto"],
+    deps = [":reflection_java_proto"],
+)
+
+genrule(
+    name = "protobuf_imports",
+    srcs = glob([
+        "src/main/proto/google/instrumentation/census.proto",
+        "src/main/proto/grpc/instrumentation/v1alpha/monitoring.proto",
+    ]),
+    outs = [
+        "protobuf_out/census.proto",
+        "protobuf_out/monitoring.proto",
+    ],
+    cmd = "for fname in $(SRCS); do " +
+          "sed 's,import \"google/instrumentation,import \"services/protobuf_out,g' $$fname > " +
+          "$(@D)/protobuf_out/$$(basename $$fname); done",
+)
+
+proto_library(
+    name = "monitoring_proto",
+    srcs = ["protobuf_out/monitoring.proto"],
+    deps = [
+        "@com_google_protobuf//:empty_proto",
+        "@com_google_protobuf//:any_proto",
+        ":census_proto",
+    ]
+)
+
+java_proto_library(
+    name = "monitoring_java_proto",
+    deps = [":monitoring_proto"],
+)
+
+java_grpc_library(
+    name = "monitoring_java_grpc",
+    srcs = [":monitoring_proto"],
+    deps = [":monitoring_java_proto"],
+)
