@@ -2,6 +2,14 @@ sudo: false
 
 language: java
 
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - wget
+      - pkg-config
+
 env:
   global:
     - GRADLE_OPTS=-Xmx512m
@@ -9,6 +17,7 @@ env:
     - LDFLAGS=-L/tmp/protobuf/lib
     - CXXFLAGS=-I/tmp/protobuf/include
     - LD_LIBRARY_PATH=/tmp/protobuf/lib
+    - BAZEL_VERSION=0.9.0
 
 before_install:
   - mkdir -p $HOME/.gradle/caches &&
@@ -23,6 +32,8 @@ before_install:
   - echo "checkstyle.ignoreFailures=false" >> $HOME/.gradle/gradle.properties
   - echo "failOnWarnings=true" >> $HOME/.gradle/gradle.properties
   - echo "errorProne=true" >> $HOME/.gradle/gradle.properties
+  - wget "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" -P /tmp
+  - sudo dpkg -i "/tmp/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
 
 install:
   - ./gradlew assemble generateTestProto install
@@ -34,6 +45,7 @@ before_script:
 
 script:
   - ./gradlew check :grpc-all:jacocoTestReport
+  - bazel build //compiler:all //context:all //core:all //netty:all //okhttp:all //protobuf:all //protobuf-lite:all //protobuf-nano:all //stub:all //testing:all
 
 after_success:
   - if \[ "$TRAVIS_OS_NAME" = linux \]; then ./gradlew :grpc-all:coveralls; fi
