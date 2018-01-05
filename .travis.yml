@@ -32,11 +32,10 @@ before_install:
   - echo "checkstyle.ignoreFailures=false" >> $HOME/.gradle/gradle.properties
   - echo "failOnWarnings=true" >> $HOME/.gradle/gradle.properties
   - echo "errorProne=true" >> $HOME/.gradle/gradle.properties
-  - mkdir -p $HOME/bazel && ln -s /tmp/bazel $HOME/bazel
-  - ls -al $HOME/bazel
+  - mkdir -p /tmp/bazel
   - ls -al /tmp/bazel
   - wget -nc "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" -P /tmp/bazel
-  - sudo dpkg -i "${HOME}/bazel/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
+  - sudo dpkg -i "/tmp/bazel/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
 
 install:
   - ./gradlew assemble generateTestProto install
