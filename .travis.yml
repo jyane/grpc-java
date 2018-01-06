@@ -4,11 +4,8 @@ language: java
 
 addons:
   apt:
-    sources:
-      - ubuntu-toolchain-r-test
     packages:
       - wget
-      - pkg-config
 
 env:
   global:
@@ -32,9 +29,9 @@ before_install:
   - echo "checkstyle.ignoreFailures=false" >> $HOME/.gradle/gradle.properties
   - echo "failOnWarnings=true" >> $HOME/.gradle/gradle.properties
   - echo "errorProne=true" >> $HOME/.gradle/gradle.properties
+  - mkdir -p $HOME/.cache/bazel && ln -s /tmp/bazel/cache $HOME/.cache/bazel
+  - ls -al $HOME/.cache/bazel
   - mkdir -p /tmp/bazel
-  - ls -al /tmp/bazel
-  - echo 'a'
   - wget -nc "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" -P /tmp/bazel
   - sudo dpkg -i "/tmp/bazel/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
 
