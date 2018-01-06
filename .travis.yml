@@ -32,7 +32,7 @@ before_install:
   - mkdir -p $HOME/.cache/bazel && ln -s /tmp/bazel/cache $HOME/.cache/bazel
   - ls -al $HOME/.cache/bazel
   - ls -al $HOME/.cache/bazel/cache
-  - ls -al /tmp/bazel/cache
+  - ls -al /tmp/bazel
   - mkdir -p /tmp/bazel
   - wget -nc "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" -P /tmp/bazel
   - sudo dpkg -i "/tmp/bazel/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
