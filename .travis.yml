@@ -34,6 +34,7 @@ before_install:
   - echo "errorProne=true" >> $HOME/.gradle/gradle.properties
   - mkdir -p /tmp/bazel
   - ls -al /tmp/bazel
+  - echo 'a'
   - wget -nc "https://github.com/bazelbuild/bazel/releases/download/${BAZEL_VERSION}/bazel_${BAZEL_VERSION}-linux-x86_64.deb" -P /tmp/bazel
   - sudo dpkg -i "/tmp/bazel/bazel_${BAZEL_VERSION}-linux-x86_64.deb"
 
